@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>Plan</title>
+    <script src="http://d3js.org/d3.v2.js"></script>
+    <style type="text/css">
+
+        rect {
+            cursor: pointer;
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 1.5px;
+            width: 100px;
+        }
+
+        path {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 1.5px;
+        }
+
+        text {
+            font-size: 12px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="chart"></div>
+<script type="text/javascript">
+
+    var w = 300,
+            h = 300,
+            i = 0,
+            nodeWidth = 60,
+            nodeHeight = 40,
+            root;
+
+    var tree = d3.layout.cluster()
+            .size([w, h]);
+
+    var diagonal = d3.svg.diagonal()
+            .projection(function (d) {
+                return [d.x, h - d.y];
+            });
+
+    var vis = d3.select("body").append("svg:svg")
+            .attr("width", w)
+            .attr("height", h + 100)
+            .append("svg:g");
+
+    d3.json("plan.json", function (json) {
+        root = json;
+        update();
+    });
+
+    function update() {
+
+        var nodes = tree.nodes(root);
+
+        var node = vis.selectAll("rect")
+                .data(nodes, function (d) {
+                    return d.id || (d.id = ++i);
+                });
+
+
+        var link = vis.selectAll("path")
+                .data(tree.links(nodes), function (d) {
+                    return d.target.id;
+                });
+
+        link.enter().insert("svg:path", "circle")
+                .attr("d", diagonal);
+
+
+        var enter = node.enter();
+
+        enter.append("svg:rect")
+                .attr("x", function (d) {
+                    return d.x - nodeWidth / 2;
+                })
+                .attr("y", function (d) {
+                    return h - d.y;
+                })
+                .attr("width", nodeWidth)
+                .attr("rx", 10)
+                .attr("ry", 10)
+                .attr("height", nodeHeight)
+                .style("fill", function (d) {
+                    return "white";
+                });
+
+        enter.append("svg:text")
+                .attr("x", function (d) {
+                    return d.x;
+                })
+                .attr("y", function (d) {
+                    return h - d.y + nodeHeight / 2;
+                })
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .text(function (d) {
+                    return d.name;
+                })
+
+    }
+
+</script>
+</body>
+</html>
+

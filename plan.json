@@ -1,0 +1,26 @@
+{
+    "name":"store",
+    "children":[
+        {
+            "name":"join",
+            "children":[
+                {
+                    "name":"foreach",
+                    "children":[
+                        {
+                            "name":"filter",
+                            "children":[
+                                {
+                                    "name":"load"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name":"load"
+                }
+            ]
+        }
+    ]
+}
