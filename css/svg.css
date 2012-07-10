@@ -1,0 +1,18 @@
+rect {
+    cursor: pointer;
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+    width: 100px;
+}
+
+path {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+}
+
+text {
+    font-size: 12px;
+}
+
