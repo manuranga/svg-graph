@@ -1,8 +1,12 @@
-var w = 600,
-    h = 600,
+var w = 800,
+    h = 800,
     i = 0,
+    gap = 5,
     defaultHeight = 40,
     defaultWidth = 80;
+
+var tree = d3.layout.cluster();
+
 
 d3.json("plan.json", function (json) {
     var vis = d3.select("body").append("svg:svg")
@@ -12,8 +16,12 @@ d3.json("plan.json", function (json) {
     drawPlan(w, h, json, vis, true);
 });
 
-function drawPlan(w, h, root, parent,drawSubGraph) {
-    var tree = d3.layout.cluster();
+function drawPlan(w, h, root, parent, drawSubGraph) {
+
+    var diagonal = d3.svg.diagonal()
+        .projection(function (d) {
+            return  [d.x * w , (1 - d.y) * h];
+        });
 
     var nodes = tree.nodes(root);
 
@@ -25,36 +33,46 @@ function drawPlan(w, h, root, parent,drawSubGraph) {
     var enter = node.enter();
 
     var rect = enter.append("svg:rect");
-    if (drawSubGraph) {
-        rect.each(function (d, i) {
-            var maxDepth = 0;
-            var maxWidths = 0;
-            d.subnodes = null;
-            if (d.hasOwnProperty("subplan")) {
-                var subNodes = tree.nodes(d.subplan);
-                d.subnodes = subNodes;
-                var getDepth = function (e) {
-                    return e.depth
-                };
-                maxDepth = d3.max(subNodes, getDepth) + 1;
-                maxWidths = d3.max(d3.nest()
-                    .key(getDepth)
-                    .rollup(function (g) {
-                        return g.length;
-                    })
-                    .entries(subNodes), function (e) {
-                    return e.values;
-                });
-            }
-            d.height = maxDepth + 1;
-            d.width = maxWidths + 1;
-        })
-    }
+    rect.each(function (d, i) {
+        var maxDepth = 0;
+        var maxWidths = 0;
+        d.subnodes = null;
+        if (drawSubGraph && d.hasOwnProperty("subplan")) {
+            var subNodes = tree.nodes(d.subplan);
+            d.subnodes = subNodes;
+            var getDepth = function (e) {
+                return e.depth
+            };
+            maxDepth = d3.max(subNodes, getDepth) + 1;
+            maxWidths = d3.max(d3.nest()
+                .key(getDepth)
+                .rollup(function (g) {
+                    return g.length;
+                })
+                .entries(subNodes), function (e) {
+                return e.values;
+            });
+        }
+        d.height = maxDepth + 1;
+        d.width = maxWidths + 1;
+    });
+
+    var link = parent.selectAll("path")
+        .data(tree.links(nodes), function (d) {
+            return d.target.id;
+        });
+
+    link.enter().insert("svg:path", "rect")
+        .attr("d", diagonal);
+
+
     rect.attr("x", function (d) {
         return d.x * w - (d.width * defaultWidth) / 2;
     })
+        .attr("rx", 10)
+        .attr("ry", 10)
         .attr("y", function (d) {
-            return (1 - d.y) * h;
+            return (1 - d.y) * (h - defaultHeight);
         })
         .attr("width", function (d) {
             return d.width * defaultWidth;
@@ -68,7 +86,7 @@ function drawPlan(w, h, root, parent,drawSubGraph) {
             return d.x * w;
         })
         .attr("y", function (d) {
-            return (1 - d.y) * h + defaultHeight / 2;
+            return (1 - d.y) * (h - defaultHeight) + defaultHeight / 2;
         })
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
@@ -77,62 +95,12 @@ function drawPlan(w, h, root, parent,drawSubGraph) {
         });
 
     rect.each(function (d) {
-        console.log(this);
-        if(d.subnodes){
+        if (d.subnodes) {
+            var thisD3 = d3.select(this);
+            var subGroup = parent.append("g");
+            subGroup.attr("transform", "translate(" + thisD3.attr("x") + "," + (Number(thisD3.attr("y")) + gap) + ")");
+            drawPlan(thisD3.attr("width"), thisD3.attr("height") - gap * 2, d.subplan, subGroup, false);
         }
     });
-
-//    node.each(function(d,i){
-//        console.log(d);
-//        if(d.hasOwnProperty("subplan")){
-//            var subTree = d3.layout.cluster();
-//            var subNodes = subTree.nodes(d.subplan);
-//            console.log(subNodes);
-//        }
-//    });
-
 }
 
-
-function update() {
-
-    var link = vis.selectAll("path")
-        .data(tree.links(nodes), function (d) {
-            return d.target.id;
-        });
-
-    link.enter().insert("svg:path", "circle")
-        .attr("d", diagonal);
-
-
-    var enter = node.enter();
-
-    enter.append("svg:rect")
-        .attr("x", function (d) {
-            return d.x - nodeWidth / 2;
-        })
-        .attr("y", function (d) {
-            return h - d.y;
-        })
-        .attr("width", nodeWidth)
-        .attr("rx", 10)
-        .attr("ry", 10)
-        .attr("height", nodeHeight)
-        .style("fill", function (d) {
-            return "white";
-        });
-
-    enter.append("svg:text")
-        .attr("x", function (d) {
-            return d.x;
-        })
-        .attr("y", function (d) {
-            return h - d.y + nodeHeight / 2;
-        })
-        .attr("text-anchor", "middle")
-        .attr("alignment-baseline", "middle")
-        .text(function (d) {
-            return d.name;
-        })
-
-}

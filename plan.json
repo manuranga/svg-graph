@@ -1,35 +1,62 @@
 {
-    "name":"store",
+    "name":"LOStore",
     "children":[
         {
-            "name":"join",
+            "name":"LOForEach",
+            "subplan":{
+                "name":"LOGenerate",
+                "children":[
+                    {
+                        "name":"LOInnerLoad"
+                    },
+                    {
+                        "name":"LOInnerLoad"
+                    }
+                ]
+            },
             "children":[
                 {
-                    "name":"foreach",
+                    "name":"LOCogroup",
                     "children":[
                         {
-                            "name":"filter",
+                            "name":"LOForEach",
                             "children":[
                                 {
-                                    "name":"load",
-                                    "subplan":{
-                                        "name":"l2",
-                                        "children":[
-                                            {
-                                                "name":"l1a"
-                                            },
-                                            {
-                                                "name":"l1b"
-                                            }
-                                        ]
-                                    }
+                                    "name":"LOLoad"
                                 }
-                            ]
+                            ],
+                            "subplan":{
+                                "name":"LOGenerate",
+                                "children":[
+                                    {
+                                        "name":"LOInnerLoad"
+                                    },
+                                    {
+                                        "name":"LOInnerLoad"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name":"LOForEach",
+                            "children":[
+                                {
+                                    "name":"LOLoad"
+                                }
+                            ],
+                            "subplan":{
+                                "name":"LOGenerate",
+                                "children":[
+                                    {
+                                        "name":"LOInnerLoad"
+                                    },
+                                    {
+                                        "name":"LOInnerLoad"
+                                    }
+                                ]
+                            }
                         }
                     ]
-                },
-                {
-                    "name":"load"
                 }
             ]
         }
