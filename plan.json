@@ -11,7 +11,18 @@
                             "name":"filter",
                             "children":[
                                 {
-                                    "name":"load"
+                                    "name":"load",
+                                    "subplan":{
+                                        "name":"l2",
+                                        "children":[
+                                            {
+                                                "name":"l1a"
+                                            },
+                                            {
+                                                "name":"l1b"
+                                            }
+                                        ]
+                                    }
                                 }
                             ]
                         }
