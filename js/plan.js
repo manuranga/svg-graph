@@ -80,6 +80,19 @@ function drawPlan(w, h, root, parent, drawSubGraph) {
         .attr("height", function (d) {
             return d.height * defaultHeight;
         });
+    rect.each(function (d) {
+        if (d.hasOwnProperty("schema")) {
+            var thisD3 = d3.select(this);
+            parent.append("text")
+                .attr("x", Number(thisD3.attr("x")) + Number(thisD3.attr("width")) / 2)
+                .attr("y", Number(thisD3.attr("y")) + Number(thisD3.attr("height")) + 12)// 12 = text height
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .attr("class", "schema")
+                .attr("opacity", 0)
+                .text(d.schema);
+        }
+    });
 
     enter.append("text")
         .attr("x", function (d) {
@@ -104,3 +117,17 @@ function drawPlan(w, h, root, parent, drawSubGraph) {
     });
 }
 
+var schemaHidden = true;
+var schemaButton = d3.select("#schemaButton");
+schemaButton.on("click", function () {
+    var schemaText = d3.selectAll(".schema");
+    if (schemaHidden) {
+        schemaText.attr("opacity", 1);
+        schemaButton.attr("value", "hide schema");
+
+    } else {
+        schemaText.attr("opacity", 0);
+        schemaButton.attr("value", "show schema");
+    }
+    schemaHidden = !schemaHidden;
+});

@@ -1,8 +1,11 @@
 {
     "name":"LOStore",
+    "schema":"{group: chararray,double}",
     "children":[
+
         {
             "name":"LOForEach",
+            "schema":"{group: chararray,double}",
             "subplan":{
                 "name":"LOGenerate",
                 "children":[
@@ -17,31 +20,15 @@
             "children":[
                 {
                     "name":"LOCogroup",
+                    "schema" : "{group: chararray,trimmed: {(symbol: chararray,dividends: float)}}",
                     "children":[
                         {
                             "name":"LOForEach",
+                            "schema":"{symbol: chararray,dividends: float}",
                             "children":[
                                 {
-                                    "name":"LOLoad"
-                                }
-                            ],
-                            "subplan":{
-                                "name":"LOGenerate",
-                                "children":[
-                                    {
-                                        "name":"LOInnerLoad"
-                                    },
-                                    {
-                                        "name":"LOInnerLoad"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name":"LOForEach",
-                            "children":[
-                                {
-                                    "name":"LOLoad"
+                                    "name":"LOLoad",
+                                    "schema":"{exchange: chararray,symbol: chararray,date: chararray,dividends: float}"
                                 }
                             ],
                             "subplan":{
