@@ -33,7 +33,7 @@ function drawPlan(w, h, root, parent, drawSubGraph) {
     var enter = node.enter();
 
     var rect = enter.append("svg:rect");
-    rect.each(function (d, i) {
+    rect.each(function (d) {
         var maxDepth = 0;
         var maxWidths = 0;
         d.subnodes = null;
@@ -98,8 +98,8 @@ function drawPlan(w, h, root, parent, drawSubGraph) {
         if (d.subnodes) {
             var thisD3 = d3.select(this);
             var subGroup = parent.append("g");
-            subGroup.attr("transform", "translate(" + thisD3.attr("x") + "," + (Number(thisD3.attr("y")) + gap) + ")");
-            drawPlan(thisD3.attr("width"), thisD3.attr("height") - gap * 2, d.subplan, subGroup, false);
+            subGroup.attr("transform", "translate(" + thisD3.attr("x") + "," + (Number(thisD3.attr("y")) + gap * 5) + ")");
+            drawPlan(thisD3.attr("width"), thisD3.attr("height") - gap * 6, d.subplan, subGroup, false);
         }
     });
 }
